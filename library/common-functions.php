@@ -20,9 +20,9 @@
      */
     function get_random_string ($length, $flag = 0) {
         $candidateCharacters = '';
-        $lowerCaseLetters = 'abcdefghijklmnopqrstuvwxyz'; // a class constant include lower-case letters
-        $capitalLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; // a class constant include capital letters
-        $numbers = '0123456789'; // a class constant include numbers
+        $lowerCaseLetters = 'abcdefghijklmnopqrstuvwxyz'; // lower-case letters
+        $capitalLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; // capital letters
+        $numbers = '0123456789'; // numbers
         switch ($flag) {
             case 1:
                 $candidateCharacters = $lowerCaseLetters;
@@ -79,4 +79,29 @@
             }
         }
         return $result;
+    }
+
+    /**
+     * filter data for mysql query
+     * @param $data the data to filter array
+     * @return the result array
+     * @author stone
+     */
+    function filter_data_before_query($data){
+        if (!empty($data) && is_array($data)) {
+			foreach ($data as $key => $value) {
+				if (!is_array($value) && !is_object($value)) {
+					$data[$key] = trim($value);
+					if (!get_magic_quotes_gpc()) {
+						$data[$key] = addslashes($value);
+					}
+					if (is_int($value)) {
+						$data[$key] = intval($value);
+					}
+				}
+			}
+			return $data;
+		} else {
+			return ['code' => -1, 'message' => 'the data to be filtered must be array'];
+		}
     }
