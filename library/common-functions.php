@@ -91,12 +91,12 @@
         if (!empty($data) && is_array($data)) {
 			foreach ($data as $key => $value) {
 				if (!is_array($value) && !is_object($value)) {
-					$data[$key] = trim($value);
+					$data[$key] = htmlspecialchars(trim($data[$key]));
 					if (!get_magic_quotes_gpc()) {
-						$data[$key] = addslashes($value);
+						$data[$key] = addslashes($data[$key]);
 					}
 					if (is_int($value)) {
-						$data[$key] = intval($value);
+						$data[$key] = intval($data[$key]);
 					}
 				}
 			}
