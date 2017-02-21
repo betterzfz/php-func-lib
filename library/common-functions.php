@@ -105,3 +105,66 @@
 			return ['code' => -1, 'message' => 'the data to be filtered must be array'];
 		}
     }
+
+    /**
+     * generate paramaters url string from array
+     * @param $params array paramaters to generate url string.
+     * @param $keepTail 0-not keep the last & in string, 1-keep the last & in string.
+     * @param $filterEmpty 0-not filter empty value, 1-filter empty value.
+     * @param $filterArray 0-not filter array value, 1-filter array value.
+     * @param $notArray an array include the paramater name which can not be from the string.
+     * @author stone
+     */
+    function generate_url_params($params, $keepTail = 0, $filterEmpty = 0, $filterArray = 0, $notArray = []){
+        if (!empty($params) && is_array($params)) {
+            $result = '';
+            foreach ($params as $key => $value) {
+                if (($filterEmpty && $value === '') || ($filterArray && is_array($value)) || (!empty($notArray) && is_array($notArray) && in_array($key, $notArray))) {
+                    continue;
+                }
+                $result .= $key.'='.$value.'&';
+            }
+            if ($keepTail) {
+                return $result;
+            } else {
+                return rtrim($result, '&');
+            }
+        } else {
+            return ['code' => -1, 'message' => '$params must been an array with elements'];
+        }
+    }
+
+    /**
+	 * generate xml from array
+     * @param $params array
+     * @author stone
+	 */
+	function array_to_xml($params){
+		if (!empty($params) && is_array($params)) {
+            $xml = '<xml>';
+            foreach ($params as $key => $value) {
+                if (is_numeric($value)) {
+                    $xml .= '<'.$key.'>'.$value.'</'.$key.'>';
+                } else {
+                    $xml .= '<'.$key.'><![CDATA['.$value.']]></'.$key.'>';
+                }
+            }
+            return $xml.'</xml>';
+        } else {
+            return ['code' => -1, 'message' => '$params must been an array with elements'];
+        }
+	}
+
+    /**
+     * generate array from xml
+     * @param string $xml
+     * @author stone
+     */
+	function xml_to_array($xml){
+		if ($xml) {
+            libxml_disable_entity_loader(true);
+            return json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+		} else {
+            return ['code' => -1, 'message' => '$xml can not been empty'];
+        }
+	}
